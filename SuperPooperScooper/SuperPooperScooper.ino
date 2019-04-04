@@ -21,6 +21,9 @@
 #define MINUTES 00 // Minute to set the clock to
 #define SECONDS 00 // Second to set the clock to
 
+// SoftwareSerial
+//#include <SoftwareSerial>
+//SoftwareSerial BTSerial(10,11); // Connect HC-08 RX to 11 and TX to 10
 
 void setup()
 {
@@ -28,7 +31,8 @@ void setup()
   SetupClock(MONTH, DATE, YEAR, DOW, HOURS, MINUTES, SECONDS); // Set the clock date, The date will be set to the same date every time it is ran, however this is irrelevent as the user does not need the date and is only used to wake up the arduino
 
   attachInterrupt(1, RTCWakeup, FALLING); // Attaches the interupt to int1 (digital pin 3) for RTC wakeup
-  
+
+ // BTSerial.begin(9600); // Initialize BT Serial  
 }
 
 void loop()
@@ -127,4 +131,45 @@ void Sleep()
   SMCR = 0b00000101; // Enable sleep mode and set it to Power Down mode
   
   __asm__ __volatile__("sleep"); // Put the arduino to sleep  
+}
+
+class Motor
+{
+  private:
+    int pin1;
+    int pin2;
+    
+  public:
+    Motor(int PosPin, int NegPin);
+    void DriveMotor(char motorDirection);
+};
+
+Motor::Motor(int PosPin, int NegPin)
+{
+  pin1 = PosPin;
+  pin2 = NegPin;
+}
+
+void Motor::DriveMotor(char motorDirection)
+{
+  switch(motorDirection)
+  {
+    case 'f':
+    {
+      digitalWrite(pin1,HIGH);
+      digitalWrite(pin2,LOW);
+      break;
+    }
+    case 'b':
+    {
+      digitalWrite(pin1,LOW);
+      digitalWrite(pin2,HIGH);
+      break;
+    }
+    default:
+    {
+      digitalWrite(pin1,LOW);
+      digitalWrite(pin2,LOW);
+    }
+  }
 }
