@@ -25,6 +25,46 @@
 //#include <SoftwareSerial>
 //SoftwareSerial BTSerial(10,11); // Connect HC-08 RX to 11 and TX to 10
 
+
+// Motor class
+class Motor 
+{
+  private:
+    int _pin1; // in 1 pin
+    int _pin2; // in 2 pin
+    int _speedControl; // speed value of the motor
+    int _pwmPin; // optional pin used to control the speed
+    
+  public:
+    Motor(int PosPin, int NegPin); // Creates a motor without speed control
+    Motor::Motor(int PosPin, int NegPin, int pwmPin); // Createsa a motor with speed control
+    void DriveMotor(char motorDirection); // Sets motor direction: 'f' == forward, 'b' or 'r' == back, anything else will stop the motor.
+    void SetSpeed(int pwmSpeed);
+};
+
+Motor::Motor(int PosPin, int NegPin)
+{
+  _pin1 = PosPin;
+  _pin2 = NegPin;
+  _pwmPin = -1; // Not using speed control
+  
+  pinMode(_pin1,OUTPUT);
+  pinMode(_pin2,OUTPUT);
+}
+
+Motor::Motor(int PosPin, int NegPin, int pwmPin)
+{
+  _pin1 = PosPin;
+  _pin2 = NegPin;
+  _pwmPin = pwmPin;
+  
+  pinMode(_pin1,OUTPUT);
+  pinMode(_pin2,OUTPUT);
+  pinMode(_pwmPin, OUTPUT);
+}
+////////////////////////////////////////////////
+
+
 void setup()
 {
   Wire.begin(); // Initialize I2C
@@ -133,23 +173,6 @@ void Sleep()
   __asm__ __volatile__("sleep"); // Put the arduino to sleep  
 }
 
-class Motor
-{
-  private:
-    int pin1;
-    int pin2;
-    
-  public:
-    Motor(int PosPin, int NegPin);
-    void DriveMotor(char motorDirection);
-};
-
-Motor::Motor(int PosPin, int NegPin)
-{
-  pin1 = PosPin;
-  pin2 = NegPin;
-}
-
 void Motor::DriveMotor(char motorDirection)
 {
   switch(motorDirection)
@@ -161,6 +184,7 @@ void Motor::DriveMotor(char motorDirection)
       break;
     }
     case 'b':
+    case 'r':
     {
       digitalWrite(pin1,LOW);
       digitalWrite(pin2,HIGH);
@@ -171,5 +195,14 @@ void Motor::DriveMotor(char motorDirection)
       digitalWrite(pin1,LOW);
       digitalWrite(pin2,LOW);
     }
+  }
+}
+
+void Motor::SetSpeed(int pwmSpeed)
+{
+  if(_pwmPin != -1) // If the pwm pin was defined
+  {
+    _speedControl = pwmSpeed;
+    analogWrite(_pwmPin, _speedControl);
   }
 }
