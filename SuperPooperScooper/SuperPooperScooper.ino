@@ -22,8 +22,8 @@
 #define SECONDS 00 // Second to set the clock to
 
 // SoftwareSerial
-//#include <SoftwareSerial>
-//SoftwareSerial BTSerial(10,11); // Connect HC-08 RX to 11 and TX to 10
+#include <SoftwareSerial.h>
+SoftwareSerial BTSerial(10,11); // Connect HC-08 RX to 11 and TX to 10
 
 
 // Motor class
@@ -179,21 +179,21 @@ void Motor::DriveMotor(char motorDirection)
   {
     case 'f':
     {
-      digitalWrite(pin1,HIGH);
-      digitalWrite(pin2,LOW);
+      digitalWrite(_pin1,HIGH);
+      digitalWrite(_pin2,LOW);
       break;
     }
     case 'b':
     case 'r':
     {
-      digitalWrite(pin1,LOW);
-      digitalWrite(pin2,HIGH);
+      digitalWrite(_pin1,LOW);
+      digitalWrite(_pin2,HIGH);
       break;
     }
     default:
     {
-      digitalWrite(pin1,LOW);
-      digitalWrite(pin2,LOW);
+      digitalWrite(_pin1,LOW);
+      digitalWrite(_pin2,LOW);
     }
   }
 }
